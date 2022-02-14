@@ -23,18 +23,29 @@ namespace ML_example
                 .ToArray();
 
 
-            var pipeline = mlContext.Transforms.Text.FeaturizeText("FeatureOceanProximity", "OceanProximity")
+            var pipeline1 = mlContext.Transforms.Text.FeaturizeText("FeatureOceanProximity", "OceanProximity")
                 .Append(mlContext.Transforms.Concatenate("floatFeatures", floatFeatures))
                 .Append(mlContext.Transforms.Concatenate("Features", "floatFeatures", "FeatureOceanProximity"))
                 .Append(mlContext.Regression.Trainers.LbfgsPoissonRegression());
 
-            var model = pipeline.Fit(split.TrainSet);
+            var pipeline2 = mlContext.Transforms.Text.FeaturizeText("FeatureOceanProximity", "OceanProximity")
+                .Append(mlContext.Transforms.Concatenate("floatFeatures", floatFeatures))
+                .Append(mlContext.Transforms.Concatenate("Features", "floatFeatures", "FeatureOceanProximity"))
+                .Append(mlContext.Regression.Trainers.FastTree());
 
-            var predictions = model.Transform(split.TestSet);
+            var modelPoisR = pipeline1.Fit(split.TrainSet);
 
-            var metrics = mlContext.Regression.Evaluate(predictions);
+            var modelTreeR = pipeline2.Fit(split.TrainSet);
 
-            Console.WriteLine($"R^2 - {metrics.RSquared}");
+            var predictionsPoisR = modelPoisR.Transform(split.TestSet);
+
+            var predictionsTreeR = modelTreeR.Transform(split.TestSet);
+
+            var metricsPoisR = mlContext.Regression.Evaluate(predictionsPoisR);
+            var metricsTreeR = mlContext.Regression.Evaluate(predictionsTreeR);
+
+            Console.WriteLine($"R^2 by Poisson Regression - {metricsPoisR.RSquared}");
+            Console.WriteLine($"R^2 by Regression Tree - {metricsTreeR.RSquared}");
 
         }
     }

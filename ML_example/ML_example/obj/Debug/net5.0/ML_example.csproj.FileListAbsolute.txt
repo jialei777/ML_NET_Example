@@ -34,3 +34,8 @@ D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\osx-x
 D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\win-x64\native\LdaNative.dll
 D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\win-x86\native\LdaNative.dll
 D:\git_code\ML_NET_Example\ML_example\ML_example\obj\Debug\net5.0\ML_example.csproj.CopyComplete
+D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\Microsoft.ML.FastTree.dll
+D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\linux-x64\native\libFastTreeNative.so
+D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\osx-x64\native\libFastTreeNative.dylib
+D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\win-x64\native\FastTreeNative.dll
+D:\git_code\ML_NET_Example\ML_example\ML_example\bin\Debug\net5.0\runtimes\win-x86\native\FastTreeNative.dll

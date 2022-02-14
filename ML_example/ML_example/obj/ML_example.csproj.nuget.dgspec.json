@@ -47,6 +47,10 @@
             "Microsoft.ML": {
               "target": "Package",
               "version": "[1.7.0, )"
+            },
+            "Microsoft.ML.FastTree": {
+              "target": "Package",
+              "version": "[1.7.0, )"
             }
           },
           "imports": [

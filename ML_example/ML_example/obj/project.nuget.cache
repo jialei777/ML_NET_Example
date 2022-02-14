@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PT++I+kiViJTEVGFaoMAhOWy09GHEcOKSUO9cKh8KYJUO2KrSooHsHIh7LUpxLrJNa/rFyM0/eckEIF/5GtVmA==",
+  "dgSpecHash": "gOLbXOh5V/DKuX4/0vUg0Sc1J/CW79L+D6vk0wLPOY2rdekblhqG8A7IPHc0ZBjM/J6wXgRiGkAwfb2EI4yJfw==",
   "success": true,
   "projectFilePath": "D:\\git_code\\ML_NET_Example\\ML_example\\ML_example\\ML_example.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.ml\\1.7.0\\microsoft.ml.1.7.0.nupkg.sha512",
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.ml.cpumath\\1.7.0\\microsoft.ml.cpumath.1.7.0.nupkg.sha512",
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.ml.dataview\\1.7.0\\microsoft.ml.dataview.1.7.0.nupkg.sha512",
+    "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.ml.fasttree\\1.7.0\\microsoft.ml.fasttree.1.7.0.nupkg.sha512",
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "C:\\Users\\jialeichen\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
