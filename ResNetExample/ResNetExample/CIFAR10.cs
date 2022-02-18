@@ -24,7 +24,7 @@ namespace ResNetExample
         private readonly static int _logInterval = 25;
         private readonly static int _numClasses = 10;
 
-        private readonly static string _modelCheckpoint = "..//..//..//..//Model//model.dat";
+        private readonly static string _modelCheckpoint = "..//..//..//..//Model//model_8_epoch.dat";
         private readonly static bool _saveModel = false;
 
         private readonly static int _timeout = 3600;    // One hour by default.

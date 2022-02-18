@@ -3,3 +3,4 @@
 **/obj/*
 Data/CIFAR10/*
 Model/*
+! Model/model_8_epoch.dat
