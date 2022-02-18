@@ -11,45 +11,36 @@ using static TorchSharp.torch.nn.functional;
 
 namespace ResNetExample
 {
-    /// <summary>
-    /// Driver for various models trained and evaluated on the CIFAR10 small (32x32) color image data set.
-    /// </summary>
-    /// <remarks>
-    /// The dataset for this example can be found at: https://www.cs.toronto.edu/~kriz/cifar.html
-    /// Download the binary file, and place it in a dedicated folder, e.g. 'CIFAR10,' then edit
-    /// the '_dataLocation' definition below to point at the right folder.
-    ///
-    /// Note: so far, CIFAR10 is supported, but not CIFAR100.
-    /// </remarks>
     class CIFAR10
     {
         private readonly static string _dataset = "CIFAR10";
         private readonly static string _dataLocation = Path.Join("..//..//..//..//Data", _dataset);
 
-        private static int _epochs = 8;
+        private static int _epochs = 1;
         private static int _trainBatchSize = 8;
+
         private static int _testBatchSize = 16;
 
         private readonly static int _logInterval = 25;
         private readonly static int _numClasses = 10;
 
+        private readonly static string _modelCheckpoint = "..//..//..//..//Model//model.dat";
+        private readonly static bool _saveModel = false;
+
         private readonly static int _timeout = 3600;    // One hour by default.
 
-        internal static void MainCIFAR10(string[] args)
+        internal static void CIFAR10Classification(string[] args)
         {
             torch.random.manual_seed(1);
 
-            var device =
-                // This worked on a GeForce RTX 2080 SUPER with 8GB, for all the available network architectures.
-                // It may not fit with less memory than that, but it's worth modifying the batch size to fit in memory.
-                torch.cuda.is_available() ? torch.CUDA :
-                torch.CPU;
+            var device = torch.cuda.is_available() ? torch.CUDA : torch.CPU;
+            //  var device = torch.CPU;
 
             if (device.type == DeviceType.CUDA)
             {
                 _trainBatchSize *= 8;
                 _testBatchSize *= 8;
-                _epochs *= 16;
+                _epochs *= 8;
             }
 
             var modelName = args.Length > 0 ? args[0] : "resnet18";
@@ -90,30 +81,19 @@ namespace ResNetExample
                     break;
                 */
                 case "resnet18":
-                    model = ResNet.ResNet18(_numClasses, device);
+                    model = ResNet.ResNet18(_numClasses, _modelCheckpoint, device);
                     break;
                 case "resnet34":
                     _testBatchSize /= 4;
-                    model = ResNet.ResNet34(_numClasses, device);
+                    model = ResNet.ResNet34(_numClasses, _modelCheckpoint, device);
                     break;
                 case "resnet50":
                     _trainBatchSize /= 6;
                     _testBatchSize /= 8;
-                    model = ResNet.ResNet50(_numClasses, device);
+                    model = ResNet.ResNet50(_numClasses, _modelCheckpoint, device);
                     break;
-#if false
-            // The following is disabled, because they require big CUDA processors in order to run.
-            case "resnet101":
-                _trainBatchSize /= 6;
-                _testBatchSize /= 8;
-                model = ResNet.ResNet101(_numClasses, device);
-                break;
-            case "resnet152":
-                _testBatchSize /= 4;
-                model = ResNet.ResNet152(_numClasses, device);
-                break;
-#endif
             }
+
 
             var hflip = TorchSharp.torchvision.transforms.HorizontalFlip();
             var gray = TorchSharp.torchvision.transforms.Grayscale(3);
@@ -121,7 +101,6 @@ namespace ResNetExample
             var contrast = TorchSharp.torchvision.transforms.AdjustContrast(1.25);
 
 
-            Console.WriteLine(model);
             Console.WriteLine($"\tPreparing training and test data...");
             Console.WriteLine();
 
@@ -153,7 +132,15 @@ namespace ResNetExample
                 Console.WriteLine($"Elapsed training time: {totalSW.Elapsed} s.");
             }
 
+
+            if (_saveModel)
+            {
+                model.save(_modelCheckpoint);
+                Console.WriteLine($"\tSaving model checkpoint to {_modelCheckpoint}");
+            }
             model.Dispose();
+
+
         }
 
         private static void Train(

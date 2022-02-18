@@ -13,7 +13,7 @@ namespace ResNetExample
         {
             // MNIST.Main(args);
             // AdversarialExampleGeneration.Main(args);
-            CIFAR10.MainCIFAR10(args);
+            CIFAR10.CIFAR10Classification(args);
             // SequenceToSequence.Main(args);
             // TextClassification.Main(args);
             //ImageTransforms.Main(args);

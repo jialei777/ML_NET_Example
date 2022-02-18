@@ -21,57 +21,62 @@ namespace ResNetExample
         private readonly Module layers;
         private int in_planes = 64;
 
-        public static ResNet ResNet18(int numClasses, Device device = null)
+        public static ResNet ResNet18(int numClasses, string loadFromFile = null, Device device = null)
         {
             return new ResNet(
                 "ResNet18",
                 (name, in_planes, planes, stride) => new BasicBlock(name, in_planes, planes, stride),
                 BasicBlock.expansion, new int[] { 2, 2, 2, 2 },
                 10,
+                loadFromFile,
                 device);
         }
 
-        public static ResNet ResNet34(int numClasses, Device device = null)
+        public static ResNet ResNet34(int numClasses, string loadFromFile = null, Device device = null)
         {
             return new ResNet(
                 "ResNet34",
                 (name, in_planes, planes, stride) => new BasicBlock(name, in_planes, planes, stride),
                 BasicBlock.expansion, new int[] { 3, 4, 6, 3 },
                 10,
+                loadFromFile,
                 device);
         }
 
-        public static ResNet ResNet50(int numClasses, Device device = null)
+        public static ResNet ResNet50(int numClasses, string loadFromFile = null, Device device = null)
         {
             return new ResNet(
                 "ResNet50",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 6, 3 },
                 10,
+                loadFromFile,
                 device);
         }
 
-        public static ResNet ResNet101(int numClasses, Device device = null)
+        public static ResNet ResNet101(int numClasses, string loadFromFile = null, Device device = null)
         {
             return new ResNet(
                 "ResNet101",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 23, 3 },
                 10,
+                loadFromFile,
                 device);
         }
 
-        public static ResNet ResNet152(int numClasses, Device device = null)
+        public static ResNet ResNet152(int numClasses, string loadFromFile = null, Device device = null)
         {
             return new ResNet(
                 "ResNet101",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 36, 3 },
                 10,
+                loadFromFile,
                 device);
         }
 
-        public ResNet(string name, Func<string, int, int, int, Module> block, int expansion, IList<int> num_blocks, int numClasses, Device device = null) : base(name)
+        public ResNet(string name, Func<string, int, int, int, Module> block, int expansion, IList<int> num_blocks, int numClasses, string loadFromFile = null, Device device = null) : base(name)
         {
             if (planes.Length != strides.Length) throw new ArgumentException("'planes' and 'strides' must have the same length.");
 
@@ -90,10 +95,21 @@ namespace ResNetExample
 
             layers = Sequential(modules);
 
+
             RegisterComponents();
 
+            if (loadFromFile != null && File.Exists(loadFromFile))
+            {
+                Console.WriteLine($"\tLoading model checkpoint from {loadFromFile}");
+                this.load(loadFromFile);
+            }
+            else
+            {
+                Console.WriteLine($"\tModel checkpoint not found, will train from scratch...");
+            }
+
             if (device != null && device.type == DeviceType.CUDA)
-                this.to(device);
+                 this.to(device);
         }
 
         private void MakeLayer(List<(string, Module)> modules, Func<string, int, int, int, Module> block, int expansion, int planes, int num_blocks, int stride)
