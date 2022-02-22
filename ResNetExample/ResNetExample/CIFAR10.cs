@@ -144,20 +144,12 @@ namespace ResNetExample
 
             */
 
-            // var aa = rand(2, 3);
-            // Console.WriteLine($"\trand(2, 3): {aa.data<float>()[0,0]}");
-            // Console.WriteLine($"\trand(2, 3): {aa[0,1].item<float>()}");
-
-            // array of float...
             var pseudoGrad = new List<float>();
-            var pseudoGradInt = new List<float>();
-            int pseudoGradLength = 0;
-            float minAbsValue = 1.0f;
-            float maxAbsValue = 0.0f;
+            var layerNames = new List<float>();
 
             foreach (var p in model.state_dict())
             {
-                // Console.WriteLine($"\tmodel.state_dict(): {p}");
+
 
                 var q = model0.state_dict()[p.Key];
                 var ten_new = p.Value.cpu().detach();
@@ -170,39 +162,18 @@ namespace ResNetExample
                 }
                 var ten_diff = ten_old.reshape(total_len) - ten_new.reshape(total_len);
 
-                for (int i = 0; i < total_len; i++)
-                {
-                    float itemValue = ten_diff[i].item<float>();
-                    pseudoGrad.Add(itemValue);
-                    if (Math.Abs(itemValue) < minAbsValue)
-                    {
-                        minAbsValue = Math.Abs(itemValue);
-                    }
-                    if (Math.Abs(itemValue) > maxAbsValue)
-                    {
-                        maxAbsValue = Math.Abs(itemValue);
-                    }
-                }
+                var ten_diff_array = ten_diff.data<float>();
+                pseudoGrad.AddRange(ten_diff_array.ToList<float>());
 
-                pseudoGradLength = pseudoGrad.Count;
-
-
-                Console.WriteLine($"Each layer: {ten_new}");
-                // Console.WriteLine($"Parameters in each layer: {total_len}, total parameters: {pseudoGradLength}");
-                // Console.WriteLine($"pseudoGrad length: {pseudoGradLength}");
-                // Console.WriteLine($"pseudoGrad: {pseudoGrad}");
-                // Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
-
+                // Console.WriteLine($"Each layer: {ten_new}");
                 // break;
             }
 
 
             Console.WriteLine($"pseudoGrad.Count: {pseudoGrad.Count}");
-            Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
-            Console.WriteLine($"minAbsValue: {minAbsValue}");
-            Console.WriteLine($"maxAbsValue: {maxAbsValue}");
+            // Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
 
-            var pseudoGradArray = pseudoGrad.ToArray<float>();
+            var pseudoGradArray = pseudoGrad.ToArray<float>(); // return this array
 
             if (_saveModel)
             {
