@@ -8,6 +8,8 @@ using ResNetExample;
 using static TorchSharp.torch;
 using static TorchSharp.torch.nn;
 using static TorchSharp.torch.nn.functional;
+using System.IO.Compression;
+using System.Linq.Expressions;
 
 namespace ResNetExample
 {
@@ -16,7 +18,7 @@ namespace ResNetExample
         private readonly static string _dataset = "CIFAR10";
         private readonly static string _dataLocation = Path.Join("..//..//..//..//Data", _dataset);
 
-        private static int _epochs = 1;
+        private static int _epochs = 0;
         private static int _trainBatchSize = 8;
 
         private static int _testBatchSize = 16;
@@ -25,6 +27,9 @@ namespace ResNetExample
         private readonly static int _numClasses = 10;
 
         private readonly static string _modelCheckpoint = "..//..//..//..//Model//model_8_epoch.dat";
+        private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_0_epoch.dat";
+        private readonly static string _modelCheckpointDiff = "..//..//..//..//Model//model_delta.dat";
+
         private readonly static bool _saveModel = false;
 
         private readonly static int _timeout = 3600;    // One hour by default.
@@ -94,7 +99,8 @@ namespace ResNetExample
                     break;
             }
 
-
+            var model0 = ResNet.ResNet18(_numClasses, _modelCheckpoint0, device);
+            /*
             var hflip = TorchSharp.torchvision.transforms.HorizontalFlip();
             var gray = TorchSharp.torchvision.transforms.Grayscale(3);
             var rotate = TorchSharp.torchvision.transforms.Rotate(90);
@@ -131,6 +137,44 @@ namespace ResNetExample
                 totalSW.Stop();
                 Console.WriteLine($"Elapsed training time: {totalSW.Elapsed} s.");
             }
+            
+
+
+            */
+
+            // var aa = rand(2, 3);
+            // Console.WriteLine($"\trand(2, 3): {aa.data<float>()[0,0]}");
+            // Console.WriteLine($"\trand(2, 3): {aa[0,1].item<float>()}");
+            
+            // array of float...
+
+            foreach (var p in model.state_dict())
+            {
+                // Console.WriteLine($"\tmodel.state_dict(): {p}");
+
+                var q = model0.state_dict()[p.Key];
+                var ten_new = p.Value.cpu().detach();
+                var ten_old = q.cpu().detach();
+
+                Console.WriteLine($"\tmodel: {ten_new[0, 0, 0, 0].item<float>()}");
+                Console.WriteLine($"\tmodel0_before: {ten_old[0, 0, 0, 0].item<float>()}");
+                ten_old -= ten_new;
+                Console.WriteLine($"\tdiff: {ten_old[0, 0, 0, 0].item<float>()}");
+
+              
+                model0.state_dict().Remove(p.Key);
+                Console.WriteLine($"\tmodel0.state_dict()[p.Key]: {model0.state_dict()[p.Key]}");
+                model0.state_dict().Add(p.Key, ten_old);
+
+                model0.state_dict()[p.Key] = ten_old;
+                // Console.WriteLine($"\tmodel0.state_dict()[p.Key]: {model0.state_dict()[p.Key]}");
+                // Console.WriteLine($"\tten_old: {ten_old.to(device)}");
+
+                Console.WriteLine($"\tmodel0_after: {model0.state_dict()[p.Key].cpu().detach()[0, 0, 0, 0].item<float>()}");
+                break;
+            }
+
+
 
 
             if (_saveModel)
