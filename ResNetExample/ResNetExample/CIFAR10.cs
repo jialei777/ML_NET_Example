@@ -10,6 +10,8 @@ using static TorchSharp.torch.nn;
 using static TorchSharp.torch.nn.functional;
 using System.IO.Compression;
 using System.Linq.Expressions;
+using System.Runtime.Serialization.Formatters;
+using System.Runtime.ExceptionServices;
 
 namespace ResNetExample
 {
@@ -145,8 +147,13 @@ namespace ResNetExample
             // var aa = rand(2, 3);
             // Console.WriteLine($"\trand(2, 3): {aa.data<float>()[0,0]}");
             // Console.WriteLine($"\trand(2, 3): {aa[0,1].item<float>()}");
-            
+
             // array of float...
+            var pseudoGrad = new List<float>();
+            var pseudoGradInt = new List<float>();
+            int pseudoGradLength = 0;
+            float minAbsValue = 1.0f;
+            float maxAbsValue = 0.0f;
 
             foreach (var p in model.state_dict())
             {
@@ -156,26 +163,46 @@ namespace ResNetExample
                 var ten_new = p.Value.cpu().detach();
                 var ten_old = q.cpu().detach();
 
-                Console.WriteLine($"\tmodel: {ten_new[0, 0, 0, 0].item<float>()}");
-                Console.WriteLine($"\tmodel0_before: {ten_old[0, 0, 0, 0].item<float>()}");
-                ten_old -= ten_new;
-                Console.WriteLine($"\tdiff: {ten_old[0, 0, 0, 0].item<float>()}");
+                long total_len = 1;
+                foreach (int dim in ten_new.shape)
+                {
+                    total_len *= dim;
+                }
+                var ten_diff = ten_old.reshape(total_len) - ten_new.reshape(total_len);
 
-              
-                model0.state_dict().Remove(p.Key);
-                Console.WriteLine($"\tmodel0.state_dict()[p.Key]: {model0.state_dict()[p.Key]}");
-                model0.state_dict().Add(p.Key, ten_old);
+                for (int i = 0; i < total_len; i++)
+                {
+                    float itemValue = ten_diff[i].item<float>();
+                    pseudoGrad.Add(itemValue);
+                    if (Math.Abs(itemValue) < minAbsValue)
+                    {
+                        minAbsValue = Math.Abs(itemValue);
+                    }
+                    if (Math.Abs(itemValue) > maxAbsValue)
+                    {
+                        maxAbsValue = Math.Abs(itemValue);
+                    }
+                }
 
-                model0.state_dict()[p.Key] = ten_old;
-                // Console.WriteLine($"\tmodel0.state_dict()[p.Key]: {model0.state_dict()[p.Key]}");
-                // Console.WriteLine($"\tten_old: {ten_old.to(device)}");
+                pseudoGradLength = pseudoGrad.Count;
 
-                Console.WriteLine($"\tmodel0_after: {model0.state_dict()[p.Key].cpu().detach()[0, 0, 0, 0].item<float>()}");
-                break;
+
+                Console.WriteLine($"Each layer: {ten_new}");
+                // Console.WriteLine($"Parameters in each layer: {total_len}, total parameters: {pseudoGradLength}");
+                // Console.WriteLine($"pseudoGrad length: {pseudoGradLength}");
+                // Console.WriteLine($"pseudoGrad: {pseudoGrad}");
+                // Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
+
+                // break;
             }
 
 
+            Console.WriteLine($"pseudoGrad.Count: {pseudoGrad.Count}");
+            Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
+            Console.WriteLine($"minAbsValue: {minAbsValue}");
+            Console.WriteLine($"maxAbsValue: {maxAbsValue}");
 
+            var pseudoGradArray = pseudoGrad.ToArray<float>();
 
             if (_saveModel)
             {
