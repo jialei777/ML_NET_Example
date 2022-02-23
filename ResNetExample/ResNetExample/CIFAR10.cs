@@ -1,17 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using TorchSharp;
-using ResNetExample;
 using static TorchSharp.torch;
 using static TorchSharp.torch.nn;
 using static TorchSharp.torch.nn.functional;
-using System.IO.Compression;
-using System.Linq.Expressions;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.ExceptionServices;
 
 namespace ResNetExample
 {
@@ -20,7 +11,7 @@ namespace ResNetExample
         private readonly static string _dataset = "CIFAR10";
         private readonly static string _dataLocation = Path.Join("..//..//..//..//Data", _dataset);
 
-        private static int _epochs = 0;
+        private static int _epochs = 1;
         private static int _trainBatchSize = 8;
 
         private static int _testBatchSize = 16;
@@ -29,8 +20,8 @@ namespace ResNetExample
         private readonly static int _numClasses = 10;
 
         private readonly static string _modelCheckpoint = "..//..//..//..//Model//model_8_epoch.dat";
-        private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_0_epoch.dat";
-        private readonly static string _modelCheckpointDiff = "..//..//..//..//Model//model_delta.dat";
+        // private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_0_epoch.dat";
+        // private readonly static string _modelCheckpointDiff = "..//..//..//..//Model//model_delta.dat";
 
         private readonly static bool _saveModel = false;
 
@@ -101,8 +92,8 @@ namespace ResNetExample
                     break;
             }
 
-            var model0 = ResNet.ResNet18(_numClasses, _modelCheckpoint0, device);
-            /*
+            // var model0 = ResNet.ResNet18(_numClasses, _modelCheckpoint0, device);
+            
             var hflip = TorchSharp.torchvision.transforms.HorizontalFlip();
             var gray = TorchSharp.torchvision.transforms.Grayscale(3);
             var rotate = TorchSharp.torchvision.transforms.Rotate(90);
@@ -139,10 +130,10 @@ namespace ResNetExample
                 totalSW.Stop();
                 Console.WriteLine($"Elapsed training time: {totalSW.Elapsed} s.");
             }
-            
 
 
-            */
+
+            /*
 
             var pseudoGrad = new List<float>();
             var layerNames = new List<float>();
@@ -174,6 +165,8 @@ namespace ResNetExample
             // Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
 
             var pseudoGradArray = pseudoGrad.ToArray<float>(); // return this array
+            
+            */
 
             if (_saveModel)
             {
@@ -181,8 +174,6 @@ namespace ResNetExample
                 Console.WriteLine($"\tSaving model checkpoint to {_modelCheckpoint}");
             }
             model.Dispose();
-
-
         }
 
         private static void Train(

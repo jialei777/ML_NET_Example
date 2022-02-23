@@ -2,3 +2,4 @@
 bin/*
 obj/*
 Model/model_new.dat
+Data/CIFAR10
