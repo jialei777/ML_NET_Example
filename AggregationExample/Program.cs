@@ -13,6 +13,8 @@ namespace AggregationExample
         private readonly static string location0 = "..//..//..//Model//model_8_epoch.dat";
         private readonly static string locationNew = "..//..//..//Model//model_new.dat";
 
+        private static double _learningRate = 0.001;
+
         static void Main(string[] args)
         {
 
@@ -22,6 +24,8 @@ namespace AggregationExample
             {
                 gradFromFile[i] = 0.2f;
             }
+
+
             var gradFromFileList = gradFromFile.ToList();
             Console.WriteLine(gradFromFileList[0]);
 
@@ -29,9 +33,26 @@ namespace AggregationExample
             var model = ResNet.ResNet18(_numClasses, location0);
             
             // var sd = new Dictionary<string, Tensor>();
-            var sd = model.state_dict();
+            var model_sd = model.state_dict();
             long pre_index = 0;
 
+            foreach (var kv_pair in model_sd)
+            {
+                var layer_name = kv_pair.Key;
+                var ten_old = model_sd[layer_name].cpu().detach();
+
+                long total_len = 1;
+                foreach (int dim in ten_old.shape)
+                    total_len *= dim;
+
+                var gradList = new List<float>();
+                gradList.AddRange(gradFromFileList.Where((fv, i) => i >= pre_index && i < pre_index + total_len));
+                pre_index = pre_index + total_len;
+
+                model_sd[layer_name] -= tensor(gradList).reshape(ten_old.shape) * _learningRate;
+            }
+
+            /*
             using (var stream = System.IO.File.OpenRead(location0))
             using (var reader = new System.IO.BinaryReader(stream))
             {
@@ -63,22 +84,22 @@ namespace AggregationExample
                     // break;
                 }
             }
+            */
 
             // save the model.state_dict() 
             Console.WriteLine($"save model.state_dict() to {locationNew}");
             using (var stream = System.IO.File.OpenWrite(locationNew))
             using (var writer = new System.IO.BinaryWriter(stream))
             {
-                writer.Encode(sd.Count); // 4 bytes
+                writer.Encode(model_sd.Count); // 4 bytes
 
-                foreach (var (k, v) in sd)
+                foreach (var (key, value) in model_sd)
                 {
-                    writer.Write(k);
-                    v.Save(writer);
+                    writer.Write(key);
+                    value.Save(writer);
                     // Console.WriteLine($"\tFirst value {v[0, 0, 0, 0].item<float>()}");
                 }
             }
-
 
             Console.WriteLine("Hello World!");
         }
