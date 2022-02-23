@@ -165,7 +165,7 @@ namespace ResNetExample
                 var ten_diff_array = ten_diff.data<float>();
                 pseudoGrad.AddRange(ten_diff_array.ToList<float>());
 
-                // Console.WriteLine($"Each layer: {ten_new}");
+                Console.WriteLine($"Each layer: {ten_new}");
                 // break;
             }
 
