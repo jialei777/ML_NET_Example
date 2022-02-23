@@ -1,10 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using TorchSharp;
-using ResNetExample;
 using static TorchSharp.torch;
 using static TorchSharp.torch.nn;
 using static TorchSharp.torch.nn.functional;
@@ -25,6 +20,9 @@ namespace ResNetExample
         private readonly static int _numClasses = 10;
 
         private readonly static string _modelCheckpoint = "..//..//..//..//Model//model_8_epoch.dat";
+        // private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_0_epoch.dat";
+        // private readonly static string _modelCheckpointDiff = "..//..//..//..//Model//model_delta.dat";
+
         private readonly static bool _saveModel = false;
 
         private readonly static int _timeout = 3600;    // One hour by default.
@@ -94,7 +92,8 @@ namespace ResNetExample
                     break;
             }
 
-
+            // var model0 = ResNet.ResNet18(_numClasses, _modelCheckpoint0, device);
+            
             var hflip = TorchSharp.torchvision.transforms.HorizontalFlip();
             var gray = TorchSharp.torchvision.transforms.Grayscale(3);
             var rotate = TorchSharp.torchvision.transforms.Rotate(90);
@@ -133,14 +132,48 @@ namespace ResNetExample
             }
 
 
+
+            /*
+
+            var pseudoGrad = new List<float>();
+            var layerNames = new List<float>();
+
+            foreach (var p in model.state_dict())
+            {
+
+
+                var q = model0.state_dict()[p.Key];
+                var ten_new = p.Value.cpu().detach();
+                var ten_old = q.cpu().detach();
+
+                long total_len = 1;
+                foreach (int dim in ten_new.shape)
+                {
+                    total_len *= dim;
+                }
+                var ten_diff = ten_old.reshape(total_len) - ten_new.reshape(total_len);
+
+                var ten_diff_array = ten_diff.data<float>();
+                pseudoGrad.AddRange(ten_diff_array.ToList<float>());
+
+                Console.WriteLine($"Each layer: {ten_new}");
+                // break;
+            }
+
+
+            Console.WriteLine($"pseudoGrad.Count: {pseudoGrad.Count}");
+            // Console.WriteLine($"pseudoGrad[0]: {pseudoGrad[0]}");
+
+            var pseudoGradArray = pseudoGrad.ToArray<float>(); // return this array
+            
+            */
+
             if (_saveModel)
             {
                 model.save(_modelCheckpoint);
                 Console.WriteLine($"\tSaving model checkpoint to {_modelCheckpoint}");
             }
             model.Dispose();
-
-
         }
 
         private static void Train(
