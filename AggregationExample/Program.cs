@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Dynamic;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static TorchSharp.torch;
-using System.IO;
-using static AggregationExample.LEB128Codec;
-using System.Diagnostics;
 using TorchSharp;
-using AggregationExample;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace AggregationExample
@@ -19,8 +10,7 @@ namespace AggregationExample
     internal class Program
     {
         private readonly static int _numClasses = 10;
-        // private readonly static string location8 = "..//..//..//Model//model_8_epoch.dat";
-        private readonly static string location0 = "..//..//..//Model//model_0_epoch.dat";
+        private readonly static string location0 = "..//..//..//Model//model_8_epoch.dat";
         private readonly static string locationNew = "..//..//..//Model//model_new.dat";
 
         static void Main(string[] args)
@@ -35,11 +25,9 @@ namespace AggregationExample
             var gradFromFileList = gradFromFile.ToList();
             Console.WriteLine(gradFromFileList[0]);
 
-
+            // now load the model
             var model = ResNet.ResNet18(_numClasses, location0);
             
-
-            // var model = ResNet.ResNet18(_numClasses, location);
             // var sd = new Dictionary<string, Tensor>();
             var sd = model.state_dict();
             long pre_index = 0;
@@ -77,6 +65,7 @@ namespace AggregationExample
             }
 
             // save the model.state_dict() 
+            Console.WriteLine($"save model.state_dict() to {locationNew}");
             using (var stream = System.IO.File.OpenWrite(locationNew))
             using (var writer = new System.IO.BinaryWriter(stream))
             {
@@ -86,6 +75,7 @@ namespace AggregationExample
                 {
                     writer.Write(k);
                     v.Save(writer);
+                    // Console.WriteLine($"\tFirst value {v[0, 0, 0, 0].item<float>()}");
                 }
             }
 
