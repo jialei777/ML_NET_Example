@@ -20,7 +20,7 @@ namespace ResNetExample
         private readonly static int _numClasses = 10;
 
         private readonly static string _modelCheckpoint = "..//..//..//..//Model//model_8_epoch.dat";
-        // private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_0_epoch.dat";
+        // private readonly static string _modelCheckpoint0 = "..//..//..//..//Model//model_9_epoch.dat";
         // private readonly static string _modelCheckpointDiff = "..//..//..//..//Model//model_delta.dat";
 
         private readonly static bool _saveModel = false;
@@ -38,7 +38,7 @@ namespace ResNetExample
             {
                 _trainBatchSize *= 8;
                 _testBatchSize *= 8;
-                _epochs *= 8;
+                _epochs *= 1;
             }
 
             var modelName = args.Length > 0 ? args[0] : "resnet18";
@@ -117,8 +117,10 @@ namespace ResNetExample
                     Stopwatch epchSW = new Stopwatch();
                     epchSW.Start();
 
-                    Train(model, optimizer, nll_loss(), train.Data(), epoch, _trainBatchSize, train.Size);
                     Test(model, nll_loss(), test.Data(), test.Size);
+                    Train(model, optimizer, nll_loss(), train.Data(), epoch, _trainBatchSize, train.Size, test);
+                    Test(model, nll_loss(), test.Data(), test.Size);
+
                     GC.Collect();
 
                     epchSW.Stop();
@@ -183,9 +185,9 @@ namespace ResNetExample
             IEnumerable<(Tensor, Tensor)> dataLoader,
             int epoch,
             long batchSize,
-            long size)
+            long size,
+            CIFARReader test)
         {
-            model.train();
 
             int batchId = 1;
             long total = 0;
@@ -193,6 +195,9 @@ namespace ResNetExample
 
             Console.WriteLine($"Epoch: {epoch}...");
 
+            Test(model, nll_loss(), test.Data(), test.Size);
+            
+            model.train();
             foreach (var (data, target) in dataLoader)
             {
 
@@ -220,11 +225,11 @@ namespace ResNetExample
                     {
                         var count = Math.Min(batchId * batchSize, size);
                         Console.WriteLine($"\rTrain: epoch {epoch} [{count} / {size}] Loss: {output.ToSingle().ToString("0.000000")} | Accuracy: { ((float)correct / total).ToString("0.000000") }");
+
                     }
 
                     batchId++;
                 }
-
                 GC.Collect();
             }
         }
