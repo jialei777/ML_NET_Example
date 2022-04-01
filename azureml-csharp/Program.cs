@@ -35,7 +35,7 @@ Console.WriteLine($"Connecting to workspace: {workspaceName}, resourceGroup: {re
 
 // Create a new experiment
 
-var experimentName = "Log-metric-from-csharp-1";
+var experimentName = "Log-metric-from-csharp-2";
 Console.WriteLine($"Creating a new experiment: {experimentName} ...");
 
 var mlflowCreateExperimentUri = $"{workspaceUri}/api/2.0/mlflow/experiments/create";
@@ -73,6 +73,28 @@ Console.WriteLine($"\t... {runCreateStatus}! Run id: {runId} \n");
 
 
 
+// ckeck status 1
+Console.WriteLine($"\nCheck status of run {runId} ...");
+
+var mlflowRunStatusUri = $"{workspaceUri}/api/2.0/mlflow/runs/get?run_id={runId}";
+var resultRunStatusStatus = await httpClient.GetAsync(mlflowRunStatusUri);
+var runStatusStatus = resultRunStatusStatus.IsSuccessStatusCode ? "Successful" : "Failed";
+
+
+if (runStatusStatus == "Successful")
+{
+
+    var runResponse1 = await resultRunStatusStatus.Content.ReadFromJsonAsync<RunResult>();
+    var runStatus1 = runResponse1.run.info.status;
+
+    Console.WriteLine($"\t... run status is: {runStatus1}!\n");
+}
+else
+{
+    Console.WriteLine($"\t... {runStatusStatus}!\n");
+}
+
+
 // Log metric
 
 var metricName = "my-cool-metric";
@@ -80,7 +102,7 @@ Console.WriteLine($"Log metric {metricName} agaist the run: {runId} ...");
 var mlflowLogMetricUri = $"{workspaceUri}/api/2.0/mlflow/runs/log-metric";
 
 Random rnd = new Random();
-int totalMetricCount = rnd.Next(15, 20);
+int totalMetricCount = rnd.Next(10, 15);
 double metricSlope = rnd.Next(50, 150)/100.0;
 
 for (int i = 0; i < totalMetricCount; i++)
@@ -98,6 +120,8 @@ for (int i = 0; i < totalMetricCount; i++)
 }
 
 
+
+
 // Stop (or complete) the run
 
 Console.WriteLine($"\nFinishing run {runId} ...");
@@ -108,9 +132,28 @@ var resultStopRun = await httpClient.PostAsJsonAsync(mlflowStopRunUri, new
     status = "FINISHED",
     end_time = (Int64)DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds * 1000
 });
-var runStopStatus = resultCreateRun.IsSuccessStatusCode ? "Successful" : "Failed";
+var runStopStatus = resultStopRun.IsSuccessStatusCode ? "Successful" : "Failed";
 
 Console.WriteLine($"\t... {runStopStatus}!\n");
+
+
+// ckeck status 2
+Console.WriteLine($"\nCheck status of run {runId} ...");
+
+var resultRunStatusStatus2 = await httpClient.GetAsync(mlflowRunStatusUri);
+var runStatusStatus2 = resultRunStatusStatus2.IsSuccessStatusCode ? "Successful" : "Failed";
+
+
+if (runStatusStatus2 == "Successful")
+{
+    var runResponse2 = await resultRunStatusStatus2.Content.ReadFromJsonAsync<RunResult>();
+    var runStatus2 = runResponse2.run.info.status;
+    Console.WriteLine($"\t... run status is: {runStatus2}!\n");
+}
+else
+{
+    Console.WriteLine($"\t... {runStatusStatus2}!\n");
+}
 
 
 Console.WriteLine($"Link to the experiment:");

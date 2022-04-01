@@ -12,6 +12,7 @@
     public class RunInfo
     {
         public string run_id { get; set; }
+        public string status { get; set; }
     }
 
 }
