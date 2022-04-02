@@ -15,7 +15,7 @@ var codeName = $"code-name-{RandomUtil.GetRandomString()}";
 var codeVersion = 1;
 var jobName = $"unique-name-{RandomUtil.GetRandomString()}";
 var clusterName = "cpucluster-jialei";
-var experimentName = "submit-job-via-csharp-3";
+var experimentName = "submit-job-via-csharp-new";
 
 
 var cred = new DefaultAzureCredential();
@@ -55,7 +55,7 @@ using (HttpClient client = new HttpClient())
         {
             JobType = "Command",
             CodeID = $"{amlDetials}/codes/{codeName}/versions/{codeVersion}",
-            Command = "python train.py",
+            Command = "python train.py --run_name Iteration-3 --model_url https://storagefakedata.blob.core.windows.net/testdatacontainer/model3.csv",
             Compute = new AmlCompute()
             {
                 Target = $"{amlDetials}/computes/{clusterName}",

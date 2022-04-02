@@ -25,7 +25,7 @@ using (HttpClient client = new HttpClient())
     
     var submitPipelineRunRequest = new SubmitPipelineRunRequest()
     {
-        ExperimentName = "FL-endpoint-from-csharp-2",
+        ExperimentName = "FL-endpoint-from-csharp-3",
         DisplayName = "model3",
         Description = "Asynchronous C# REST api call",
         ParameterAssignments = new Dictionary<string, string>
@@ -70,16 +70,17 @@ using (HttpClient client = new HttpClient())
   
     var mlFlowUri = $"{mlFlowBaseUri}/api/2.0/mlflow/runs/get?run_id={(string)runId}";
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 1; i++)
     {
         // var requestStatus = await client.PostAsync(mlFlowUri, httpContentStatus).ConfigureAwait(false);
+
+        Thread.Sleep(2000);
         var requestStatus = await client.GetAsync(mlFlowUri).ConfigureAwait(false);
 
         Console.WriteLine(requestStatus.StatusCode);
         var resultStaus = await requestStatus.Content.ReadAsStringAsync().ConfigureAwait(false);
-        // var runInfo = JObject.Parse(resultStaus);
-        Console.WriteLine(resultStaus);
-        Thread.Sleep(2000);
+        var runInfo = JObject.Parse(resultStaus);
+        Console.WriteLine(runInfo);
     }
 
     // Console.WriteLine(runInfo.GetValue("Run"));
