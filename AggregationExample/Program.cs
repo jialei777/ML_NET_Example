@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using FlatBuffers;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +17,6 @@ namespace AggregationExample
         private readonly static string _dataset = "CIFAR10";
         private readonly static string _dataLocation = Path.Join("..//..//..//Data", _dataset);
 
-
         private readonly static int _numClasses = 10;
         private readonly static string location0 = "..//..//..//Model//model_8_epoch.dat";
         private readonly static string locationNew = "..//..//..//Model//model_new.dat";
@@ -25,14 +26,25 @@ namespace AggregationExample
 
         static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder();
+            builder.AddCommandLine(args);
+            var config = builder.Build();
+
+            // Read input gradient
+            byte[] data = File.ReadAllBytes(config["input_gradients_path"]);
+            var bytebuffer = new ByteBuffer(data);
+            var gradient = Gradient.Gradient.GetRootAsGradient(bytebuffer);
+
+            var gradFromFile = gradient.GetGradientsArray();
 
             // Assuming this is my gradient array
+            /*
             float[] gradFromFile = new float[11173962];
             for (int i = 0; i < gradFromFile.Length; i++)
             {
                 gradFromFile[i] = 0.2f;
             }
-
+            */
 
             var gradFromFileList = gradFromFile.ToList();
             Console.WriteLine(gradFromFileList[0]);
