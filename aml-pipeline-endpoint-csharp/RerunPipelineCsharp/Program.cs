@@ -51,6 +51,7 @@ using (HttpClient client = new HttpClient())
 
     var result = await submitResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
     var obj = JObject.Parse(result);
+    Console.WriteLine("resulting json file");
     Console.WriteLine(obj);
     // ... use `obj` dictionary to access results
     var runId = obj.GetValue("PipelineRunId");
