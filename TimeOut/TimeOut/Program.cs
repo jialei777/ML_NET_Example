@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 public class Example
 {
     static readonly int _timeout = 4500;
-    static readonly CancellationTokenSource s_cts = new CancellationTokenSource();
+    //static readonly CancellationTokenSource s_cts = new CancellationTokenSource();
 
     static async Task Main()
     {
         Console.WriteLine($">> Want to timeout in {_timeout} milliseconds");
 
-        TimeoutMethod();
+        await TimeoutMethod();
     }
     static async Task TimeoutMethod1()
     {
@@ -31,19 +31,15 @@ public class Example
     }
     static async Task TimeoutMethod()
     {
+        using (var s_cts = new CancellationTokenSource())
         try
         {
             s_cts.CancelAfter(_timeout);
-
             var result = await tryMethodToken(s_cts.Token);
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("\n>> timeout successfully\n");
-        }
-        finally
-        {
-            s_cts.Dispose();
+            Console.WriteLine("\n>> timeout successfully :)\n");
         }
 
 
