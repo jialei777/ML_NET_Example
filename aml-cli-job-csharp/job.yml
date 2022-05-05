@@ -1,0 +1,5 @@
+experiment_name: cli-submit-csharp-new
+code: ./src
+command: ./SimpleRun
+environment: azureml:AzureML-sklearn-0.24-ubuntu18.04-py37-cpu:24
+compute: azureml:cpu-cluster # adjust the compute name accordingly

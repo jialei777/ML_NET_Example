@@ -1,0 +1,21 @@
+$schema: https://componentsdk.azureedge.net/jsonschema/DistributedComponent.json
+name: csharp_component
+display_name: C# (.NET Core) component
+version: 0.0.1
+type: DistributedComponent
+is_deterministic: False
+launcher:
+  type: mpi
+  additional_arguments: >-
+    ./src/SimpleRun
+environment:
+  # docker:
+  #   image: polymerprod.azurecr.io/polymercd/prod_official/azureml_base_cpu:latest
+  conda:
+    # TODO: why this?
+    conda_dependencies:
+      dependencies:
+      - python=3.7
+      - pip:
+        - azureml-core==1.27.0
+        # - --index-url https://o365exchange.pkgs.visualstudio.com/_packaging/PolymerPythonPackages/pypi/simple/
