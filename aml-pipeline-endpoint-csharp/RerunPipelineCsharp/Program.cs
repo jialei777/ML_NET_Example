@@ -52,23 +52,24 @@ using (HttpClient client = new HttpClient())
     var result = await submitResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
     var obj = JObject.Parse(result);
     Console.WriteLine("resulting json file");
-    Console.WriteLine(obj);
+    Console.WriteLine((int)submitResponse.StatusCode);
+    Console.WriteLine(obj.GetValue("RunUrl"));
     // ... use `obj` dictionary to access results
     var runId = obj.GetValue("PipelineRunId");
     Console.WriteLine(runId);
-    
+
 
     // ________________________________________________________________________________________________________ //
     // ________________________________________________________________________________________________________ //
-    // var runId = "3b6a08d3-f811-450b-993e-cf4e451b85e9";
+    //var runId = "3b6a08d3-f811-450b-993e-cf4e451b85e9";
 
     var subscriptionID = "48bbc269-ce89-4f6f-9a12-c6f91fcb772d";
     var region = "westus2";
     var resourceGroupName = "aml1p-rg";
     var workspaceName = "aml1p-ml-wus2";
 
-    var mlFlowBaseUri = $"https://{region}.api.azureml.ms/mlflow/v1.0/subscriptions/{subscriptionID}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}"; 
-  
+    var mlFlowBaseUri = $"https://{region}.api.azureml.ms/mlflow/v1.0/subscriptions/{subscriptionID}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}";
+
     var mlFlowUri = $"{mlFlowBaseUri}/api/2.0/mlflow/runs/get?run_id={(string)runId}";
 
     for (int i = 0; i < 1; i++)
@@ -80,18 +81,15 @@ using (HttpClient client = new HttpClient())
 
         Console.WriteLine(requestStatus.StatusCode);
         var resultStaus = await requestStatus.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var runInfo = JObject.Parse(resultStaus);
-        Console.WriteLine(runInfo);
+        JObject runInfo = JObject.Parse(resultStaus); 
+        Console.WriteLine((string)requestStatus.Content.ReadAsStringAsync().Result);
+        // Console.WriteLine(runInfo.GetValue("info"));
     }
 
-    // Console.WriteLine(runInfo.GetValue("Run"));
+    //Console.WriteLine(runInfo.GetValue("Run"));
 
 
 }
-
-
-
-
 
 
 

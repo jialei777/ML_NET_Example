@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Protos\amlpipeline.proto" />
     <None Remove="Protos\greet.proto" />
   </ItemGroup>
 
@@ -21,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Protobuf Include="Protos\amlpipeline.proto">
+      <GrpcServices>Client</GrpcServices>
+    </Protobuf>
     <Protobuf Include="Protos\greet.proto" GrpcServices="Client" />
   </ItemGroup>
 
