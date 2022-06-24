@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcService";
+
+
+service AmlJob {
+	rpc SubmitAmlJob (AmlJobDetails) returns (SubmissionStatus);
+	rpc CheckAmlJobStatus (AmlRun) returns (RunStatus);
+}
+
+message AmlJobDetails {
+	string pipelineEndpoint = 1; 
+}
+
+message SubmissionStatus {
+	int32 statusCode = 1;
+	string amlUrl = 2;
+	string runId = 3;
+	string errorMessage = 4;
+}
+
+message AmlRun {
+	string runId = 1;
+}
+
+message RunStatus {
+	string resultJson = 1;
+}
